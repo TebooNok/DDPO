@@ -12,6 +12,15 @@ Xinyue Chen<sup>†</sup>, Pengyu Gao<sup>†</sup>, Jiangjiang Song, Liqian Che
 - Paper: [https://doi.org/10.1016/j.ipm.2026.105104](https://doi.org/10.1016/j.ipm.2026.105104)
 - Base framework: [Search-R1](https://github.com/PeterGriffinJin/Search-R1)
 
+<p align="center">
+  <a href="assets/figures/ddpo-intuition.pdf">
+    <img src="assets/figures/ddpo-intuition.png" width="95%" alt="Conceptual illustration of DDPO encouraging diverse search queries and broader retrieval coverage instead of redundant queries and overlapping retrievals.">
+  </a>
+</p>
+<p align="center">
+  <em>Conceptual illustration of how DDPO encourages exploration in query and evidence spaces. Click the figure or open the <a href="assets/figures/ddpo-intuition.pdf">vector PDF</a>.</em>
+</p>
+
 ## Overview
 
 Search-based LLM agents can learn when and how to retrieve external evidence through reinforcement learning. During training, however, their search behavior may collapse prematurely: different rollouts begin to issue similar queries and retrieve overlapping documents, reducing exploration and limiting the learning signal.
@@ -24,6 +33,15 @@ Search-based LLM agents can learn when and how to retrieve external evidence thr
 
 DDPO does not require an additional reward model or extra supervision. It is integrated into the Search-R1/veRL training pipeline and can be enabled or disabled through the training configuration.
 
+<p align="center">
+  <a href="assets/figures/ddpo-framework.pdf">
+    <img src="assets/figures/ddpo-framework.png" width="95%" alt="The DDPO framework computes intra-trajectory and cross-trajectory information gain for queries and retrieved evidence, then uses a time-decayed adaptive-gating mechanism to control the exploration incentive.">
+  </a>
+</p>
+<p align="center">
+  <em>DDPO combines intra-trajectory and cross-trajectory information gain with adaptive gating. Click the figure or open the <a href="assets/figures/ddpo-framework.pdf">vector PDF</a>.</em>
+</p>
+
 ## Highlights
 
 - Restores exploration during reinforcement-learning fine-tuning of search-based LLM agents.
@@ -33,10 +51,39 @@ DDPO does not require an additional reward model or extra supervision. It is int
 
 The paper reports an average exact-match score of **52.1%** with a 7B backbone. On Natural Questions, DDPO reaches **44.8% EM** with **1.01 searches per question** on average; on MuSiQue, it improves Gold Passage Recall by **6.3%**.
 
+## Training Dynamics
+
+On Natural Questions, DDPO’s query-semantic and corpus diversity increase early
+and remain higher during training, while both Search-R1 diversity signals decline
+toward zero:
+
+<p align="center">
+  <a href="assets/figures/diversity-during-training.pdf">
+    <img src="assets/figures/diversity-during-training.png" width="82%" alt="On Natural Questions, DDPO’s semantic and corpus diversity increase early and remain higher, while Search-R1’s diversity signals decline toward zero.">
+  </a>
+</p>
+<p align="center">
+  <em>Semantic and corpus diversity on Natural Questions across training. Click the figure or open the <a href="assets/figures/diversity-during-training.pdf">vector PDF</a>.</em>
+</p>
+
+On the multi-hop MuSiQue benchmark, DDPO also learns to use more valid searches
+while its exact-match score improves:
+
+<p align="center">
+  <a href="assets/figures/search-behavior-and-em.pdf">
+    <img src="assets/figures/search-behavior-and-em.png" width="82%" alt="On MuSiQue, DDPO increases the number of valid searches and reaches a higher exact-match score than Search-R1 during training.">
+  </a>
+</p>
+<p align="center">
+  <em>Search behavior and exact-match performance on MuSiQue during training. Click the figure or open the <a href="assets/figures/search-behavior-and-em.pdf">vector PDF</a>.</em>
+</p>
+
 ## Repository Structure
 
 ~~~text
 DDPO/
+├── assets/
+│   └── figures/                   # README figures: PNG previews and vector PDFs
 ├── scripts/
 │   ├── data_process/              # QA dataset preprocessing
 │   ├── download.py                # Wiki-18 corpus and E5 index download
